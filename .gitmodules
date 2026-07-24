@@ -1,0 +1,3 @@
+[submodule "laradock-atlas"]
+	path = laradock-atlas
+	url = git@github.com:tanyaphung/laradock-atlas.git

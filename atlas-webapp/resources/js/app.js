@@ -1,0 +1,13 @@
+import './traitView';
+import './traitDB';
+import './sweetalert.min';
+import './stats';
+import './sidebar';
+import './reportGWAS';
+import './odometer.min';
+import './multiGWAS';
+import './jquery.tabletoCSV';
+import './google_analytics';
+import './global';
+import './PheWAS';
+import './HoldOn.min';
