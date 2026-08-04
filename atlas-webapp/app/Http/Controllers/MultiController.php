@@ -60,26 +60,8 @@ class MultiController extends Controller
 
 		$script = base_path('scripts/getPlotCor.py');
 		$plotCor = shell_exec("python3 $script '".json_encode(['data'=>$tmpdata])."'");
-		// $plotCor = shell_exec(
-		// 	"python3 $script '" . json_encode(['data'=>$tmpdata]) . "' 2>&1"
-		// );
-		// Log::info("plotCor raw: ".$plotCor);
 		if($plotCor == ""){$plotCor = [];}
 		else{$plotCor = json_decode($plotCor);}
-
-		// $result = Process::run([
-		// 	'/usr/bin/python3',
-		// 	base_path('scripts/getPlotCor.py'),
-		// 	json_encode(['data' => $tmpdata]),
-		// ]);
-
-		// if ($result->successful()) {
-		// 	$plotCor = json_decode($result->output(), true);
-		// } else {
-		// 	Log::error($result->errorOutput());
-		// }
-
-
 
 		$out = ["sum"=>$sum, "plotData"=>['data'=>$plotData, 'cor'=>$plotCor]];
 		return json_encode($out);
@@ -94,7 +76,6 @@ class MultiController extends Controller
 		$pass = $config['password'];
 		$db   = $config['database'];
 		$gc = shell_exec("python3 $script $host $user $pass $db $ids");
-		Log::info("gc: ".$gc);
 		return $gc;
 	}
 
@@ -107,33 +88,32 @@ class MultiController extends Controller
 		$pass = $config['password'];
 		$db = $config['database'];
 		$magma = shell_exec("python3 $script $host $user $pass $db $ids 2.5e-6");
-		Log::info("magma: ".$magma);
-		// $command = "python3 $script $host $user $pass $db $ids 2.5e-6 2>&1";
-		// $magma = shell_exec($command);
-
-		// Log::info("Python output: ".$magma);
 		return $magma;
 	}
 
 	public function getLociOverlap(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = $script = base_path('scripts/getLociOverlap.py');
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$lociOver = shell_exec("python $script $host $user $pass $db $ids");
+		$script = base_path('scripts/getLociOverlap.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db = $config['database'];
+		$command = "python3 $script $host $user $pass $db $ids 2>&1";
+		$lociOver = shell_exec($command);
 		return $lociOver;
 	}
 
 	public function getGenesPleiotropy(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = $script = base_path('scripts/getGenesPleiotropy.py');
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$genes = shell_exec("python $script $host $user $pass $db $ids");
+		$script = base_path('scripts/getGenesPleiotropy.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db = $config['database'];
+		$command = "python3 $script $host $user $pass $db $ids";
+		$genes = shell_exec($command);
 		return $genes;
 	}
 

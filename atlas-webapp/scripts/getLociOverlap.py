@@ -3,7 +3,7 @@
 import sys
 import os
 import MySQLdb
-import ConfigParser
+import configparser
 import numpy as np
 import json
 import time
@@ -12,7 +12,7 @@ import numpy as np
 
 ##### Return index of a1 which exists in a2 #####
 def ArrayIn(a1, a2):
-	return np.where(np.in1d(a1, a2))[0]
+	return np.where(np.isin(a1, a2))[0]
 
 ##### Return unique array #####
 def unique(a):
@@ -34,7 +34,7 @@ ids = [int(s) for s in ids]
 ids.sort()
 
 ## config
-cfg = ConfigParser.ConfigParser()
+cfg = configparser.ConfigParser()
 cfg.read(os.path.dirname(os.path.realpath(__file__))+'/app.config')
 
 datadir = cfg.get('path', 'data')
@@ -49,7 +49,7 @@ loci = np.array(loci)
 loci = loci[ArrayIn(loci[:,0], ids)]
 if len(loci)==0:
 	data = {"id":[], "Domain":[], "Trait":[], "loci":[], "loci_group":[]}
-	print json.dumps(data)
+	print(json.dumps(data))
 	sys.exit()
 
 ## identify overlapped loci
@@ -110,4 +110,20 @@ for l in traits:
 ## return nested json
 loci = [list(l) for l in loci]
 data = {"id":ids, "Domain":domain, "Trait":trait, "loci": loci, "loci_group": loci_group}
-print json.dumps(data)
+def convert(obj):
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, dict):
+        return {k: convert(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [convert(v) for v in obj]
+    return obj
+
+print(json.dumps(convert(data)))
+# print(json.dumps(data))

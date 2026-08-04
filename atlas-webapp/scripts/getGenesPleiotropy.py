@@ -3,7 +3,7 @@
 import sys
 import os
 import MySQLdb
-import ConfigParser
+import configparser
 import numpy as np
 import json
 import time
@@ -12,7 +12,7 @@ import math
 
 ##### Return index of a1 which exists in a2 #####
 def ArrayIn(a1, a2):
-	return np.where(np.in1d(a1, a2))[0]
+	return np.where(np.isin(a1, a2))[0]
 
 ##### Return unique array #####
 def unique(a):
@@ -21,7 +21,7 @@ def unique(a):
 	return unique
 
 if len(sys.argv)<2:
-    sys.exit("ERROR: Not enought argument.\nUSAGE: ./getGenesPleiotropy.py <host> <user> <passwd> <db> <ids>")
+    sys.exit("ERROR: Not enough argument.\nUSAGE: ./getGenesPleiotropy.py <host> <user> <passwd> <db> <ids>")
 
 # Get arguments
 host = sys.argv[1]
@@ -34,7 +34,7 @@ ids = [int(s) for s in ids]
 ids.sort()
 
 ## config
-cfg = ConfigParser.ConfigParser()
+cfg = configparser.ConfigParser()
 cfg.read(os.path.dirname(os.path.realpath(__file__))+'/app.config')
 
 datadir = cfg.get('path', 'data')
@@ -45,7 +45,7 @@ conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
 c = conn.cursor()
 
 ## magma genes
-magma = pd.read_csv(datadir+"/magma.P.txt", delim_whitespace=True, header=0, index_col=0, usecols=["GENE"]+[str(x) for x in ids])
+magma = pd.read_csv(datadir+"/magma.P.txt", sep=r"\s+", header=0, index_col=0, usecols=["GENE"]+[str(x) for x in ids])
 magma = magma.dropna()
 genes = np.array(list(magma.index.values))
 magma = np.array(magma)
@@ -88,8 +88,24 @@ for l in traits:
     trait[str(int(l[0]))]=l[3]
 
 nTrait = np.sum(magma, axis=1, dtype=int)
-nDomain = map(lambda x: len(unique(domains[np.where(x==1)])), magma)
+nDomain = [len(unique(domains[np.where(x==1)])) for x in magma]
 
 genes = np.array([ENSG[i,:].tolist()+[nTrait[i], nDomain[i]] for i in range(len(genes))], dtype=object)
 data = {"id":inids.tolist(), "Domain":domain, "Trait":trait, "genes":genes.tolist()}
-print json.dumps(data)
+def convert(obj):
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, dict):
+        return {k: convert(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [convert(v) for v in obj]
+    return obj
+
+print(json.dumps(convert(data)))
+# print(json.dumps(data))
