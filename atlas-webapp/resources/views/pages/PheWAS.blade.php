@@ -26,9 +26,10 @@
 	});
 	var subdir = "{{ Config::get('app.subdir') }}";
 </script>
-<script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
+<!-- <script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
 <script type="text/javascript" src="{!! URL::asset('js/jquery.tabletoCSV.js') !!}"></script>
-<script type="text/javascript" src="{!! URL::asset('js/PheWAS.js') !!}?100"></script>
+<script type="text/javascript" src="{!! URL::asset('js/PheWAS.js') !!}?100"></script> -->
+@vite(['resources/js/PheWAS.js', 'resources/js/global.js'])
 @stop
 
 @section('content')

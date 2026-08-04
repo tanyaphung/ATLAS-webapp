@@ -4,25 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Log;
 
 class PheWASController extends Controller
 {
     public function getData(Request $request){
+		$config = DB::connection()->getConfig();
 		$text = $request->input('text');
 		$ids = $request->input('ids');
 		$maxP = $request->input('maxP');
 		if($ids==""){$ids="NA";}
 		if($maxP==""){$maxP="1";}
 
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db   = $config['database'];
 
 		$datadir = config('app.datadir');
-		$script = $script = base_path('scripts/getPheWASdata.py');
-		$json = shell_exec("python $script $host $user $pass $db $text $ids $maxP $datadir");
+		$script = base_path('scripts/getPheWASdata.py');
+		$json = shell_exec("python3 $script $host $user $pass $db $text $ids $maxP $datadir");
 
 		return $json;
 	}
