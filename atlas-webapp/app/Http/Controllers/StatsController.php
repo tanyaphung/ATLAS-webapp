@@ -24,7 +24,7 @@ class StatsController extends Controller
 	}
 
 	public function yearSumPlot(){
-		$script = storage_path().'/scripts/DBsummary.py';
+		$script = $script = base_path('scripts/DBsummary.py');
 		$host = config('database.connections.mysql.host');
 		$user = config('database.connections.mysql.username');
 		$pass = config('database.connections.mysql.password');
@@ -35,7 +35,7 @@ class StatsController extends Controller
 	}
 
 	public function domainSumPlot(){
-		$script = storage_path().'/scripts/DBsummary.py';
+		$script = $script = base_path('scripts/DBsummary.py');
 		$host = config('database.connections.mysql.host');
 		$user = config('database.connections.mysql.username');
 		$pass = config('database.connections.mysql.password');

@@ -21,7 +21,7 @@ class PheWASController extends Controller
 		$db = config('database.connections.mysql.database');
 
 		$datadir = config('app.datadir');
-		$script = storage_path().'/scripts/getPheWASdata.py';
+		$script = $script = base_path('scripts/getPheWASdata.py');
 		$json = shell_exec("python $script $host $user $pass $db $text $ids $maxP $datadir");
 
 		return $json;

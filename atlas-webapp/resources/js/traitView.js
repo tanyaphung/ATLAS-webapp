@@ -537,7 +537,7 @@ function GCplot(data){
 	if(data.GC==null || data.GC==undefined || data.GC.length==0){
 		table = '<tr><td colspan="7" style="text-align:center; font-size:14px;"> No data available.</td></tr>';
 		$('#GCtableBody').html(table);
-		$('#GCplot').html('<span style="color:red;"><i class="fa fa-ban"></i> Genetic cirrelation is not available for the specified conditions or thie GWAS does not meet the criteria.</span>');
+		$('#GCplot').html('<span style="color:red;"><i class="fa fa-ban"></i> Genetic correlation is not available for the specified conditions or this GWAS does not meet the criteria.</span>');
 	}else{
 		$('#GCtotalN').html("The number of GWAS to be tested is "+data.totalN+" (used for Bonferroni correction).");
 		var table="";

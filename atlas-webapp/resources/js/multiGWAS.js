@@ -300,6 +300,7 @@ function displayData(ids){
 						},
 						success: function(magma){
 							magma = JSON.parse(magma);
+							console.log(magma);
 							// GC and MAGMA row size
 							if(gc.data.id.length>20 || magma.data.id.length>20){
 								$('#gc_magma_row').removeClass();

@@ -19,6 +19,9 @@ class CreateGCTable extends Migration
             $table->float('se');
             $table->float('z');
             $table->float('p');
+            $table->float('gcov_int');
+            $table->float('gcov_int_se');
+            
         });
     }
 
