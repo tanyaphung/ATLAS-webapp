@@ -4,7 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Log;
+
 
 class StatsController extends Controller
 {
@@ -24,24 +30,28 @@ class StatsController extends Controller
 	}
 
 	public function yearSumPlot(){
-		$script = $script = base_path('scripts/DBsummary.py');
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
+		$config = DB::connection()->getConfig();
+		$script = base_path('scripts/DBsummary.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db   = $config['database'];
 
-		$results = shell_exec("python $script $host $user $pass $db Year");
+		$results = shell_exec("python3 $script $host $user $pass $db Year 2>&1");
+		Log::info("yearSumPlot: ".$results);
 		return $results;
 	}
 
 	public function domainSumPlot(){
-		$script = $script = base_path('scripts/DBsummary.py');
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
+		$config = DB::connection()->getConfig();
+		$script = base_path('scripts/DBsummary.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db   = $config['database'];
 
-		$results = shell_exec("python $script $host $user $pass $db Domain");
+		$results = shell_exec("python3 $script $host $user $pass $db Domain 2>&1");
+		Log::info("domainSumPlot: ".$results);
 		return $results;
 	}
 

@@ -19,10 +19,9 @@
 	});
 	var subdir = "{{ Config::get('app.subdir') }}";
 </script>
-<script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
-<script type="text/javascript" src="{!! URL::asset('js/odometer.min.js') !!}"></script>
-<script type="text/javascript" src="{!! URL::asset('js/stats.js') !!}"></script>
 <link rel="stylesheet" href="{!! URL::asset('css/odometer-theme-default.css') !!}">
+
+@vite(['resources/js/stats.js', 'resources/js/odometer.min.js', 'resources/js/global.js'])
 
 @stop
 

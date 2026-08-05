@@ -86,4 +86,4 @@ for g in groups:
 
 ### return nested json
 out = {"sum": summary, "Nbox":{"data":Nbox, "out":Nboxout}, "Hbox":{"data":Hbox, "out":Hboxout}}
-print json.dumps(out)
+print(json.dumps(out))
