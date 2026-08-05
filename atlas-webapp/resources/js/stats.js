@@ -44,6 +44,7 @@ function yearSumPlot(){
 	var ipanel = 0;
 
 	d3.json(subdir+'/stats/yearSumPlot', function(data){
+		console.log(data);
 		// summary data
 		data.sum.forEach(function(d){
 			d[0] = +parseInt(d[0]); //year (string)

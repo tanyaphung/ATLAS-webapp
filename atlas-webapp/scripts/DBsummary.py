@@ -44,7 +44,8 @@ data = np.array(data)
 
 ### groups
 groups = unique(data[:,0])
-groups.sort()
+# groups.sort()
+groups.sort(key=str)
 
 ### summary
 summary = []
@@ -85,5 +86,17 @@ for g in groups:
 			Hboxout.append([l[0], float(l[1])])
 
 ### return nested json
+summary = [[str(row[0]), *row[1:]] for row in summary]
 out = {"sum": summary, "Nbox":{"data":Nbox, "out":Nboxout}, "Hbox":{"data":Hbox, "out":Hboxout}}
-print(json.dumps(out))
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super().default(obj)
+
+print(json.dumps(out, cls=NumpyEncoder))

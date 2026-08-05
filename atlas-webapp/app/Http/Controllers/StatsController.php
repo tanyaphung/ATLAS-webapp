@@ -38,7 +38,7 @@ class StatsController extends Controller
 		$db   = $config['database'];
 
 		$results = shell_exec("python3 $script $host $user $pass $db Year 2>&1");
-		Log::info("yearSumPlot: ".$results);
+		Log::info("Year summary plot results: " . $results);
 		return $results;
 	}
 
@@ -50,8 +50,7 @@ class StatsController extends Controller
 		$pass = $config['password'];
 		$db   = $config['database'];
 
-		$results = shell_exec("python3 $script $host $user $pass $db Domain 2>&1");
-		Log::info("domainSumPlot: ".$results);
+		$results = shell_exec("python3 $script $host $user $pass $db Domain");
 		return $results;
 	}
 
