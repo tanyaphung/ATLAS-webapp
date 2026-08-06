@@ -35,3 +35,15 @@ class GWASDB(Base):
     Note = Column(String)
     DateAdded = Column(Date)
     DateLastModified = Column(Date)
+    
+class GenCor(Base):
+    __tablename__ = "GenCor"
+
+    id1 = Column(Integer, primary_key=True)
+    id2 = Column(Integer)
+    rg = Column(Float)
+    se = Column(Float)
+    z = Column(Float)
+    p = Column(Float)
+    gcov_int = Column(Float)
+    gcov_int_se = Column(Float)

@@ -62,7 +62,7 @@ $(document).ready(function(){
 	})
 })
 
-function CheckInput(){
+window.CheckInput = function (){
 	var submit = false;
 	if($('#phenotype').val().length>0 && $('#sumstats').val().length>0 && $('#publication').val().length>0 && $('#year').val().length>0){
 		submit=true;
@@ -91,7 +91,7 @@ function getTable(){
 			{"data": "publication", name: "Publication"},
 			{"data": "year", name: "Year"},
 			{"data": "status", name: "Status"},
-			{"data": "note", name: "Note"},
+			{"data": "comment", name: "Note"},
 			{"data": "date_submit", name: "Date submitted"},
 			{"data": "date_last_update", name: "Date last updated"}
 		],

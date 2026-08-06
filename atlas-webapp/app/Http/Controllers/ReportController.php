@@ -34,7 +34,7 @@ class ReportController extends Controller
 	}
 
 	public function getTable(){
-		$result = DB::select('SELECT id, phenotype, sumstats_link, publication, year, status, note, date_submit, date_last_update FROM reportedGWAS');
+		$result = DB::select('SELECT id, phenotype, sumstats_link, publication, year, status, comment, date_submit, date_last_update FROM reportedGWAS');
 		return array("data"=>$result);
 	}
 }

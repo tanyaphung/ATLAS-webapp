@@ -17,9 +17,7 @@
 <!-- <script src="//cdn.jsdelivr.net/npm/sweetalert2@8"></script> -->
 <!-- <script type="text/javascript" src="{!! URL::asset('js/sweetalert.min.js') !!}"></script>
 <link rel="stylesheet" href="{!! URL::asset('css/sweetalert.css') !!}"> -->
-<script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
-<script type="text/javascript" src="{!! URL::asset('js/HoldOn.min.js') !!}?0.0.1"></script>
-<script type="text/javascript" src="{!! URL::asset('js/reportGWAS.js') !!}?0.0.3"></script>
+@vite(['resources/js/reportGWAS.js', 'resources/js/HoldOn.min.js', 'resources/js/global.js'])
 @stop
 
 @section('content')
