@@ -44,6 +44,7 @@ function yearSumPlot(){
 	var ipanel = 0;
 
 	d3.json(subdir+'/stats/yearSumPlot', function(data){
+		console.log(data);
 		// summary data
 		data.sum.forEach(function(d){
 			d[0] = +parseInt(d[0]); //year (string)
@@ -992,7 +993,7 @@ function PieCorrdinate(data, label, arc){
 		if(label_pos[i][0]>=0 && label_pos[i][1]<0){rt_idx.push(i)}
 		else if(label_pos[i][0]>=0 && label_pos[i][1]>=0){rb_idx.push(i)}
 		else if(label_pos[i][0]<0 && label_pos[i][1]<0){lt_idx.push(i)}
-		else if(label_pos[i][0]<00 && label_pos[i][1]>=0){lb_idx.push(i)}
+		else if(label_pos[i][0]<0 && label_pos[i][1]>=0){lb_idx.push(i)}
 	}
 
 	// process each block

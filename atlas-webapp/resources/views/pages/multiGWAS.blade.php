@@ -26,8 +26,9 @@
 	});
 	var subdir = "{{ Config::get('app.subdir') }}";
 </script>
-<script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
-<script type="text/javascript" src="{!! URL::asset('js/multiGWAS.js') !!}?0.0.2"></script>
+<!-- <script type="text/javascript" src="{!! URL::asset('js/global.js') !!}"></script>
+<script type="text/javascript" src="{!! URL::asset('js/multiGWAS.js') !!}?0.0.2"></script> -->
+@vite(['resources/js/multiGWAS.js', 'resources/js/global.js'])
 
 @stop
 

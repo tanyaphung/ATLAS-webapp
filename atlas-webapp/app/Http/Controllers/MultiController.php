@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Log;
 
 class MultiController extends Controller
 {
@@ -12,7 +17,19 @@ class MultiController extends Controller
 		$ids = $request->input('ids');
 		$ids = explode(":", $ids);
 
-		$tmp = DB::select('SELECT id, PMID, Year, Domain, Trait, N, Nhits, IFNULL(SNPh2_l, SNPh2) as SNPh2, SNPh2_z FROM gwasDB');
+		$tmp = DB::select('
+    SELECT
+        id,
+        PMID,
+        Year,
+        Domain,
+        Trait,
+        N,
+        Nhits,
+        SNPh2,
+        SNPh2_z
+    FROM gwasDB
+');
 		$tmp = json_decode(json_encode($tmp), true);
 		$dbData = [];
 		foreach($tmp as $r){
@@ -40,8 +57,8 @@ class MultiController extends Controller
 			$tmpdata[] = [$r['id'], $r['Year'], $r['N']/1000, $r['Nhits'], $r['SNPh2'], $r['SNPh2_z']];
 		}
 
-		$script = storage_path().'/scripts/getPlotCor.py';
-		$plotCor = shell_exec("python $script '".json_encode(['data'=>$tmpdata])."'");
+		$script = base_path('scripts/getPlotCor.py');
+		$plotCor = shell_exec("python3 $script '".json_encode(['data'=>$tmpdata])."'");
 		if($plotCor == ""){$plotCor = [];}
 		else{$plotCor = json_decode($plotCor);}
 
@@ -50,46 +67,52 @@ class MultiController extends Controller
 	}
 
 	public function getGC(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = storage_path().'/scripts/getGCheat.py';
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$gc = shell_exec("python $script $host $user $pass $db $ids");
+		$script = base_path('scripts/getGCheat.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db   = $config['database'];
+		$gc = shell_exec("python3 $script $host $user $pass $db $ids");
 		return $gc;
 	}
 
 	public function getGenes(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = storage_path().'/scripts/getGeneheat.py';
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$magma = shell_exec("python $script $host $user $pass $db $ids 2.5e-6");
+		$script = base_path('scripts/getGeneheat.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db = $config['database'];
+		$magma = shell_exec("python3 $script $host $user $pass $db $ids 2.5e-6");
 		return $magma;
 	}
 
 	public function getLociOverlap(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = storage_path().'/scripts/getLociOverlap.py';
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$lociOver = shell_exec("python $script $host $user $pass $db $ids");
+		$script = base_path('scripts/getLociOverlap.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db = $config['database'];
+		$command = "python3 $script $host $user $pass $db $ids 2>&1";
+		$lociOver = shell_exec($command);
 		return $lociOver;
 	}
 
 	public function getGenesPleiotropy(Request $request){
+		$config = DB::connection()->getConfig();
 		$ids = $request->input('ids');
-		$script = storage_path().'/scripts/getGenesPleiotropy.py';
-		$host = config('database.connections.mysql.host');
-		$user = config('database.connections.mysql.username');
-		$pass = config('database.connections.mysql.password');
-		$db = config('database.connections.mysql.database');
-		$genes = shell_exec("python $script $host $user $pass $db $ids");
+		$script = base_path('scripts/getGenesPleiotropy.py');
+		$host = $config['host'];
+		$user = $config['username'];
+		$pass = $config['password'];
+		$db = $config['database'];
+		$command = "python3 $script $host $user $pass $db $ids";
+		$genes = shell_exec($command);
 		return $genes;
 	}
 

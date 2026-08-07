@@ -148,12 +148,21 @@ function SelectOptions(type, domain, chapter, subchapter, trait){
 	});
 }
 
-function SelectEnter(e){
-	var code = e.keyCode ? e.keyCode : e.which;
-	if(code==13){
-		selectTable.draw();
-	}
-}
+// function SelectEnter(e){
+// 	var code = e.keyCode ? e.keyCode : e.which;
+// 	if(code==13){
+// 		selectTable.draw();
+// 	}
+// }
+
+window.SearchEnter = function (e) {
+    var code = e.keyCode ? e.keyCode : e.which;
+    if (code == 13) {
+        if ($('#searchText').val().length > 0) {
+            updatePlot();
+        }
+    }
+};
 
 function manual_select_check(){
 	var n = 0;
