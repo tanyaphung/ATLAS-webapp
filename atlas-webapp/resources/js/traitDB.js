@@ -7,7 +7,7 @@ $(document).ready(function(){
 	$('#nMin').val("");
 	$('#nMax').val("");
 	$('#Domain').val("null");
-	Selection("Domain");
+	handleSelection("Domain");
 
 	$('#dbTable').on('click', 'tr', function(){
 		var rowData = selectTable.row(this).data();
@@ -15,7 +15,7 @@ $(document).ready(function(){
 	});
 });
 
-function Selection(type){
+window.handleSelection = function(type){
 	var domain = $('#Domain').val();
 	var chapter = $('#Chapter').val();
 	var subchapter = $('#Subchapter').val();

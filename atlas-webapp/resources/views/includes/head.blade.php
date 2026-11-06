@@ -5,3 +5,4 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="icon" href="{!! URL::asset('image/atlasicon.png') !!}">
 <link rel="stylesheet" href="{!! URL::asset('css/style.css') !!}">
+<!-- @vite('resources/css/app.css') -->
