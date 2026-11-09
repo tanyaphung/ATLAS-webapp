@@ -63,8 +63,7 @@ class BaseController extends Controller
     }
 
 	public function sumstats($file){
-		$dir = config('app.sumstatsdir');
-		return response() -> download($dir.'/'.$file);
+		return response() -> download($this->safePath(config('app.sumstatsdir'), $file));
 	}
 
 	public function DTfile(Request $request){
@@ -72,8 +71,7 @@ class BaseController extends Controller
 		$fin = $request -> input('infile');
 		$cols = $request -> input('header');
 		$cols = explode(":", $cols);
-		$filedir = config('app.datadir').'/'.$id.'/';
-		$f = $filedir.$fin;
+		$f = $this->safePath($this->gwasDir($id), $fin);
 		if(file_exists($f)){
 			$file = fopen($f, 'r');
 			$all_rows = array();
@@ -107,8 +105,7 @@ class BaseController extends Controller
 
 	public function release(Request $request){
 		$file = $request -> input('file');
-		$filedir = config('app.releasedir');
-		return response() -> download($filedir.'/'.$file);
+		return response() -> download($this->safePath(config('app.releasedir'), $file));
 	}
 
 	public function getAckn(){

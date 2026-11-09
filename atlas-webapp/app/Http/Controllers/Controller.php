@@ -30,6 +30,36 @@ abstract class Controller
 		return $result->output();
 	}
 
+	// Full path of $name inside $dir, or a 404. $name must be a plain file
+	// name (no "/" or ".."), and an existing file must resolve inside $dir
+	// (catches symlinks). A missing file or folder is returned as is, so
+	// callers keep their own file_exists() handling.
+	protected function safePath($dir, $name){
+		if(!is_string($name) || !preg_match('/^[A-Za-z0-9_][A-Za-z0-9._-]*$/', $name)){
+			abort(404);
+		}
+		$base = realpath($dir);
+		if($base === false){
+			return $dir.'/'.$name;
+		}
+		$path = realpath($base.'/'.$name);
+		if($path === false){
+			return $base.'/'.$name;
+		}
+		if(!str_starts_with($path, $base.DIRECTORY_SEPARATOR)){
+			abort(404);
+		}
+		return $path;
+	}
+
+	// Per-GWAS folder for a numeric id, or a 404
+	protected function gwasDir($id){
+		if(!preg_match('/^\d+$/', (string) $id)){
+			abort(404);
+		}
+		return config('app.datadir').'/'.$id;
+	}
+
 	// Abort with 422 unless $ids looks like "1:34:727"
 	protected function validIds($ids){
 		if(!is_string($ids) || !preg_match(self::IDS_PATTERN, $ids)){

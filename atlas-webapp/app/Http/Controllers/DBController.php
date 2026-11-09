@@ -392,7 +392,7 @@ class DBController extends Controller
 	}
 
 	public function manhattan($id, $file){
-		$filedir = config('app.datadir').'/'.$id.'/';
+		$filedir = $this->gwasDir($id).'/';
 		if($file == "manhattan.txt"){
 			if(file_exists($filedir.$file)){
 				$f = fopen($filedir.$file, "r");
@@ -430,7 +430,7 @@ class DBController extends Controller
 	}
 
 	public function QQplot($id, $plot){
-		$filedir = config('app.datadir').'/'.$id.'/';
+		$filedir = $this->gwasDir($id).'/';
 		if($plot=="SNP"){
 			$file="QQSNPs.txt";
 			if(file_exists($filedir.$file)){
@@ -581,9 +581,9 @@ class DBController extends Controller
 		$file = $request -> input('infile');
 		$cols = $request -> input('header');
 		$cols = explode(":", $cols);
-		$filedir = config('app.datadir').'/'.$id.'/';
-		if(file_exists($filedir.$file)){
-			$f = fopen($filedir.$file, "r");
+		$path = $this->safePath($this->gwasDir($id), $file);
+		if(file_exists($path)){
+			$f = fopen($path, "r");
 			$header = fgetcsv($f, 0, "\t");
 			$all_rows = array();
 			$index = array();
