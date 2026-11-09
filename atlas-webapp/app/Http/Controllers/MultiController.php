@@ -86,29 +86,6 @@ class MultiController extends Controller
 	}
 
 	public function imgdown(Request $request){
-		$t = time();
-		$svg = $request->input('data');
-		$type = $request->input('type');
-		$fileName = $request->input('fileName');
-		$filedir = config('app.datadir').'/tmp_plot/'.$t.'/';
-		File::makeDirectory($filedir, $mode = 0755, $recursive = true);
-		$svgfile = $filedir.'temp.svg';
-		$outfile = $filedir.$fileName.'_'.date('Ymd_His', $t).'.'.$type;
-
-		$svg = preg_replace("/\),rotate/", ")rotate", $svg);
-		$svg = preg_replace("/,skewX\(.+?\)/", "", $svg);
-		$svg = preg_replace("/,scale\(.+?\)/", "", $svg);
-		if($type=="svg"){
-			file_put_contents($svgfile, $svg);
-			File::move($svgfile, $outfile);
-		}else{
-			$image = new \Imagick();
-			$image->setResolution(300,300);
-			$image->readImageBlob('<?xml version="1.0"?>'.$svg);
-			$image->setImageFormat($type);
-			$image->writeImage($outfile);
-			return response() -> download($outfile);
-		}
-		return response() -> download($outfile);
-    }
+		return $this->plotDownload($request, date('Ymd_His'));
+	}
 }

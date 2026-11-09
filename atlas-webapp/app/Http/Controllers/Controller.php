@@ -60,6 +60,39 @@ abstract class Controller
 		return config('app.datadir').'/'.$id;
 	}
 
+	// Send the SVG of a plot back as an svg/png/jpeg/pdf download.
+	// Everything happens in memory: nothing is written to disk, and the
+	// download name is built from a cleaned-up fileName plus $suffix.
+	protected function plotDownload($request, $suffix){
+		$type = $request->input('type');
+		if(!in_array($type, ['svg', 'png', 'jpeg', 'pdf'], true)){
+			abort(422, 'Invalid type');
+		}
+		$name = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $request->input('fileName'));
+		$name = substr($name, 0, 64) ?: 'plot';
+
+		$svg = (string) $request->input('data');
+		$svg = preg_replace("/\),rotate/", ")rotate", $svg);
+		$svg = preg_replace("/,skewX\(.+?\)/", "", $svg);
+		$svg = preg_replace("/,scale\(.+?\)/", "", $svg);
+		// The plots are plain D3 output. Drop anything that could make the
+		// SVG (or ImageMagick, when rasterising) load other files or run code.
+		$svg = preg_replace('/<!(DOCTYPE|ENTITY)[^>]*>/i', '', $svg);
+		$svg = preg_replace('/<script\b.*?<\/script>/is', '', $svg);
+		$svg = preg_replace('/\s(xlink:)?href\s*=\s*("[^"#][^"]*"|\'[^\'#][^\']*\')/i', '', $svg);
+
+		if($type=="svg"){
+			$blob = $svg;
+		}else{
+			$image = new \Imagick();
+			$image->setResolution(300,300);
+			$image->readImageBlob('<?xml version="1.0"?>'.$svg);
+			$image->setImageFormat($type);
+			$blob = $image->getImagesBlob();
+		}
+		return response()->streamDownload(function() use ($blob){ echo $blob; }, $name.'_'.$suffix.'.'.$type);
+	}
+
 	// Abort with 422 unless $ids looks like "1:34:727"
 	protected function validIds($ids){
 		if(!is_string($ids) || !preg_match(self::IDS_PATTERN, $ids)){
