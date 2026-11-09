@@ -14,23 +14,18 @@ use Illuminate\Support\Facades\Log;
 class PheWASController extends Controller
 {
     public function getData(Request $request){
-		$config = DB::connection()->getConfig();
-		$text = $request->input('text');
+		$text = trim((string) $request->input('text'));
 		$ids = $request->input('ids');
 		$maxP = $request->input('maxP');
 		if($ids==""){$ids="NA";}
+		else{$this->validIds($ids);}
 		if($maxP==""){$maxP="1";}
 
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db   = $config['database'];
+		// text is an rsID, chr:pos, or a gene symbol / Ensembl ID
+		if(!preg_match('/^[A-Za-z0-9._:-]{1,50}$/', $text)){abort(422, 'Invalid query');}
+		if(!is_numeric($maxP)){abort(422, 'Invalid maxP');}
 
-		$datadir = config('app.datadir');
-		$script = base_path('scripts/getPheWASdata.py');
-		$json = shell_exec("python3 $script $host $user $pass $db $text $ids $maxP $datadir");
-
-		return $json;
+		return $this->runScript('getPheWASdata.py', [$text, $ids, $maxP, config('app.datadir')]);
 	}
 
 	public function imgdown(Request $request){

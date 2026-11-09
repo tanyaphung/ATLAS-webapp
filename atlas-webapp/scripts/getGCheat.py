@@ -8,26 +8,23 @@
 
 import sys
 import MySQLdb
+import atlas_db
 import numpy as np
 import pandas as pd
 import json
 from scipy.cluster.hierarchy import linkage, leaves_list
 import time
 
-if len(sys.argv)<6:
-    sys.exit("ERROR: Not enought argument.\nUSAGE: ./getGCheat.py <host> <user> <passwd> <database> <ids>")
+if len(sys.argv)<2:
+    sys.exit("ERROR: Not enought argument.\nUSAGE: ./getGCheat.py <ids>")
 
 ## Get arguments
-host = sys.argv[1]
-user = sys.argv[2]
-passwd = sys.argv[3]
-db = sys.argv[4]
-ids = sys.argv[5]
+ids = sys.argv[1]
 ids = ids.split(":")
 ids = [int(s) for s in ids]
 
 ## connect mysql
-conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+conn = atlas_db.connect()
 c = conn.cursor()
 
 ## genetic correlation filters on given ids

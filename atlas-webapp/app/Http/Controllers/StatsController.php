@@ -30,27 +30,13 @@ class StatsController extends Controller
 	}
 
 	public function yearSumPlot(){
-		$config = DB::connection()->getConfig();
-		$script = base_path('scripts/DBsummary.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db   = $config['database'];
-
-		$results = shell_exec("python3 $script $host $user $pass $db Year 2>&1");
+		$results = $this->runScript('DBsummary.py', ['Year']);
 		Log::info("Year summary plot results: " . $results);
 		return $results;
 	}
 
 	public function domainSumPlot(){
-		$config = DB::connection()->getConfig();
-		$script = base_path('scripts/DBsummary.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db   = $config['database'];
-
-		$results = shell_exec("python3 $script $host $user $pass $db Domain");
+		$results = $this->runScript('DBsummary.py', ['Domain']);
 		return $results;
 	}
 
