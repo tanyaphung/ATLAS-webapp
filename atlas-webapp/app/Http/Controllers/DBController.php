@@ -565,17 +565,6 @@ class DBController extends Controller
 		return json_encode($results);
 	}
 
-	public function topSNPs(Request $request){
-		$id = $request->input('id');
-		$cols = $request -> input('header');
-		$header = explode(":", $cols);
-		$cols = str_replace(":", ", ", $cols);
-		$results = DB::select("SELECT ".$cols." FROM RiskLoci WHERE id=?", [$id]);
-		$results = json_decode(json_encode($results), true);
-		$results = array('data'=>$results);
-		return json_encode($results);
-	}
-
 	public function DTfile(Request $request){
 		$id = $request -> input('id');
 		$file = $request -> input('infile');

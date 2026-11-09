@@ -25,6 +25,9 @@ if len(sys.argv)<2:
 
 ### Get arguments
 col = sys.argv[1]
+# col is pasted into the query below, so only allow the two columns the site uses
+if col not in ("Year", "Domain"):
+    sys.exit("ERROR: column must be Year or Domain")
 
 ## connect mysql
 conn = atlas_db.connect()

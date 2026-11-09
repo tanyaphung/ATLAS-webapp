@@ -49,7 +49,7 @@ def getSNP(text, ids, datadir, maxP):
     if re.match(r'^rs', text, re.IGNORECASE):
         ucsc = MySQLdb.connect(host="genome-mysql.soe.ucsc.edu", user="genome", db="hg19")
         dbSNP = ucsc.cursor()
-        dbSNP.execute('SELECT chrom, chromEnd FROM snp146 WHERE name='+'"'+text+'"')
+        dbSNP.execute('SELECT chrom, chromEnd FROM snp146 WHERE name=%s', (text,))
         rows = dbSNP.fetchall()
         chrom, pos = rows[0]
         chrom = int(chrom.replace('chr', ''))
@@ -127,7 +127,7 @@ def getGene(text, ids, datadir, genesdir, maxP):
     for r in rows:
         if r[0] in p:
             g = [r[0], float(p[r[0]])]
-            c.execute("SELECT PMID,Year,Domain,Trait,N FROM gwasDB WHERE id="+str(r[0]))
+            c.execute("SELECT PMID,Year,Domain,Trait,N FROM gwasDB WHERE id=%s", (r[0],))
             rows = c.fetchall()
             out.append(g+list(r)[1:])
 
