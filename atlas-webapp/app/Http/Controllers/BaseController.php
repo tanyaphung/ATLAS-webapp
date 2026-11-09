@@ -57,9 +57,11 @@ class BaseController extends Controller
 	public function getAckn(){
 		$out = [];
 		$rows = DB::select('SELECT name, affiliation, count(*) as count FROM reportedGWAS WHERE anonymous=0 GROUP BY name, affiliation ORDER BY count DESC');
+		// name and affiliation come from the public report form and the home
+		// page inserts this string as HTML, so escape them
 		foreach($rows as $r){
-			$n = $r->name;
-			$a = $r->affiliation;
+			$n = e($r->name);
+			$a = e($r->affiliation);
 			$c = $r->count;
 			if($a=="NA"){
 				$out[] = $n." [".$c."]";
