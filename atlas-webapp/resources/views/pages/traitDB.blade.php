@@ -34,19 +34,19 @@
 			<div class="row">
 				<div class="col-md-4 col-sm-4 col-xs-4">
 					Domain:<br/>
-					<select class="selectpicker" name="Domain" id="Domain" onchange='Selection("Domain");'>
+					<select class="selectpicker" name="Domain" id="Domain" onchange='window.handleSelection("Domain");'>
 						<option value=null>-- Please select Domain of interest --</option>
 					</select>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-4">
 					Chapter level:<br/>
-					<select class="selectpicker" name="Chapter" id="Chapter" onchange='Selection("Chapter");'>
+					<select class="selectpicker" name="Chapter" id="Chapter" onchange='window.handleSelection("Chapter");'>
 						<option value=null>-- Please select Chapter of interest --</option>
 					</select>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-4">
 					Subchapter level:<br/>
-					<select class="selectpicker" name="Subchapter" id="Subchapter" onchange='Selection("Subchapter");'>
+					<select class="selectpicker" name="Subchapter" id="Subchapter" onchange='window.handleSelection("Subchapter");'>
 						<option value=null>-- Please select Subchapter of interest --</option>
 					</select>
 				</div>
@@ -58,7 +58,7 @@
 					<i class="fa fa-question-circle-o fa-lg"></i>
 				</a>
 				<br/>
-				<select class="selectpicker" data-width="75%" name="Trait" id="Trait" onchange='Selection("Trait");'>
+				<select class="selectpicker" data-width="75%" name="Trait" id="Trait" onchange='window.handleSelection("Trait");'>
 					<option value=null>-- Please select Domain of interest --</option>
 				</select><br/>
 				<!-- Trait keyword: <input type="text" class="form-control" id="TraitKey" name="TraitKey" onkeydown="SelectEnter(event)"></input> -->
@@ -109,3 +109,8 @@
 	</div>
 </div>
 @stop
+
+@push('vite')
+	@vite(['resources/js/utils/traitDB.js'])
+
+@endpush

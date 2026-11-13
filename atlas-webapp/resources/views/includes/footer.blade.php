@@ -11,4 +11,5 @@
 		</div>
 	</div>
 </footer>
-<script src="{!! URL::asset('js/google_analytics.js') !!}"></script>
+<!-- <script src="{!! URL::asset('js/google_analytics.js') !!}"></script> -->
+@vite('resources/js/google_analytics.js')

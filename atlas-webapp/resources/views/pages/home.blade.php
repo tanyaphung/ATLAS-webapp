@@ -8,7 +8,8 @@
 		headers: {'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')}
 	});
 </script>
-<script type="text/javascript" src="{!! URL::asset('js/odometer.min.js') !!}"></script>
+<!-- <script type="text/javascript" src="{!! URL::asset('js/odometer.min.js') !!}"></script> -->
+@vite('resources/js/odometer.min.js')
 <link rel="stylesheet" href="{!! URL::asset('css/odometer-theme-default.css') !!}">
 <script type="text/javascript">
 	$(document).ready(function(){
