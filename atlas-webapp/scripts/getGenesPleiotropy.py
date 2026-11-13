@@ -3,6 +3,7 @@
 import sys
 import os
 import MySQLdb
+import atlas_db
 import configparser
 import numpy as np
 import json
@@ -24,11 +25,7 @@ if len(sys.argv)<2:
     sys.exit("ERROR: Not enough argument.\nUSAGE: ./getGenesPleiotropy.py <host> <user> <passwd> <db> <ids>")
 
 # Get arguments
-host = sys.argv[1]
-user = sys.argv[2]
-passwd = sys.argv[3]
-db = sys.argv[4]
-ids = sys.argv[5]
+ids = sys.argv[1]
 ids = ids.split(":")
 ids = [int(s) for s in ids]
 ids.sort()
@@ -41,7 +38,7 @@ datadir = cfg.get('path', 'data')
 genedir = cfg.get('path', 'ENSG')
 
 ## connect mysql
-conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+conn = atlas_db.connect()
 c = conn.cursor()
 
 ## magma genes

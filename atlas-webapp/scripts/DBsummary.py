@@ -8,6 +8,7 @@
 
 import sys
 import MySQLdb
+import atlas_db
 import numpy as np
 import json
 from scipy.cluster.hierarchy import linkage, leaves_list
@@ -19,18 +20,17 @@ def unique(a):
 	[unique.append(s) for s in a if s not in unique]
 	return unique
 
-if len(sys.argv)<6:
-    sys.exit("ERROR: Not enought argument.\nUSAGE: ./DBsummary.py <host> <user> <passwd> <database> <column>")
+if len(sys.argv)<2:
+    sys.exit("ERROR: Not enought argument.\nUSAGE: ./DBsummary.py <column>")
 
 ### Get arguments
-host = sys.argv[1]
-user = sys.argv[2]
-passwd = sys.argv[3]
-db = sys.argv[4]
-col = sys.argv[5]
+col = sys.argv[1]
+# col is pasted into the query below, so only allow the two columns the site uses
+if col not in ("Year", "Domain"):
+    sys.exit("ERROR: column must be Year or Domain")
 
 ## connect mysql
-conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+conn = atlas_db.connect()
 c = conn.cursor()
 
 ### get values

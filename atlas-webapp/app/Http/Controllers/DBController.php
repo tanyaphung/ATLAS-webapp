@@ -392,7 +392,7 @@ class DBController extends Controller
 	}
 
 	public function manhattan($id, $file){
-		$filedir = config('app.datadir').'/'.$id.'/';
+		$filedir = $this->gwasDir($id).'/';
 		if($file == "manhattan.txt"){
 			if(file_exists($filedir.$file)){
 				$f = fopen($filedir.$file, "r");
@@ -430,7 +430,7 @@ class DBController extends Controller
 	}
 
 	public function QQplot($id, $plot){
-		$filedir = config('app.datadir').'/'.$id.'/';
+		$filedir = $this->gwasDir($id).'/';
 		if($plot=="SNP"){
 			$file="QQSNPs.txt";
 			if(file_exists($filedir.$file)){
@@ -565,25 +565,14 @@ class DBController extends Controller
 		return json_encode($results);
 	}
 
-	public function topSNPs(Request $request){
-		$id = $request->input('id');
-		$cols = $request -> input('header');
-		$header = explode(":", $cols);
-		$cols = str_replace(":", ", ", $cols);
-		$results = DB::select("SELECT ".$cols." FROM RiskLoci WHERE id=?", [$id]);
-		$results = json_decode(json_encode($results), true);
-		$results = array('data'=>$results);
-		return json_encode($results);
-	}
-
 	public function DTfile(Request $request){
 		$id = $request -> input('id');
 		$file = $request -> input('infile');
 		$cols = $request -> input('header');
 		$cols = explode(":", $cols);
-		$filedir = config('app.datadir').'/'.$id.'/';
-		if(file_exists($filedir.$file)){
-			$f = fopen($filedir.$file, "r");
+		$path = $this->safePath($this->gwasDir($id), $file);
+		if(file_exists($path)){
+			$f = fopen($path, "r");
 			$header = fgetcsv($f, 0, "\t");
 			$all_rows = array();
 			$index = array();
@@ -613,56 +602,12 @@ class DBController extends Controller
 	}
 
 	public function imgdown(Request $request){
-		$svg = $request->input('data');
-		$id = $request -> input('id');
-		$type = $request->input('type');
-		$fileName = $request->input('fileName');
-		$filedir = config('app.datadir').'/'.$id.'/';
-		$svgfile = $filedir.'temp.svg';
-		$outfile = $filedir.$fileName.'_atlas_'.$id.'.'.$type;
-
-		$svg = preg_replace("/\),rotate/", ")rotate", $svg);
-		$svg = preg_replace("/,skewX\(.+?\)/", "", $svg);
-		$svg = preg_replace("/,scale\(.+?\)/", "", $svg);
-		if(!File::exists($outfile)){
-			if($type=="svg"){
-				file_put_contents($svgfile, $svg);
-				File::move($svgfile, $outfile);
-			}else{
-				$image = new \Imagick();
-				$image->setResolution(300,300);
-				$image->readImageBlob('<?xml version="1.0"?>'.$svg);
-				$image->setImageFormat($type);
-				$image->writeImage($outfile);
-				return response() -> download($outfile);
-			}
-		}
-		return response() -> download($outfile);
-    }
+		$id = $request->input('id');
+		return $this->plotDownload($request, 'atlas_'.(preg_match('/^\d+$/', (string) $id) ? $id : ''));
+	}
 
 	public function imgdown2(Request $request){
-		$svg = $request->input('data');
-		$id = $request -> input('id');
-		$type = $request->input('type');
-		$fileName = $request->input('fileName');
-		$filedir = config('app.datadir').'/'.$id.'/';
-		$svgfile = $filedir.'temp.svg';
-		$outfile = $filedir.$fileName.'_atlas_'.$id.'.'.$type;
-
-		$svg = preg_replace("/\),rotate/", ")rotate", $svg);
-		$svg = preg_replace("/,skewX\(.+?\)/", "", $svg);
-		$svg = preg_replace("/,scale\(.+?\)/", "", $svg);
-		if($type=="svg"){
-			file_put_contents($svgfile, $svg);
-			File::move($svgfile, $outfile);
-		}else{
-			$image = new \Imagick();
-			$image->setResolution(300,300);
-			$image->readImageBlob('<?xml version="1.0"?>'.$svg);
-			$image->setImageFormat($type);
-			$image->writeImage($outfile);
-			return response() -> download($outfile);
-		}
-		return response() -> download($outfile);
-    }
+		$id = $request->input('id');
+		return $this->plotDownload($request, 'atlas_'.(preg_match('/^\d+$/', (string) $id) ? $id : ''));
+	}
 }

@@ -35,6 +35,13 @@ class ReportController extends Controller
 
 	public function getTable(){
 		$result = DB::select('SELECT id, phenotype, sumstats_link, publication, year, status, comment, date_submit, date_last_update FROM reportedGWAS');
+		// These fields come from the public report form and DataTables renders
+		// cells as HTML, so escape every value
+		foreach($result as $row){
+			foreach($row as $k => $v){
+				$row->$k = is_string($v) ? e($v) : $v;
+			}
+		}
 		return array("data"=>$result);
 	}
 }

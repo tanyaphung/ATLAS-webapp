@@ -57,8 +57,7 @@ class MultiController extends Controller
 			$tmpdata[] = [$r['id'], $r['Year'], $r['N']/1000, $r['Nhits'], $r['SNPh2'], $r['SNPh2_z']];
 		}
 
-		$script = base_path('scripts/getPlotCor.py');
-		$plotCor = shell_exec("python3 $script '".json_encode(['data'=>$tmpdata])."'");
+		$plotCor = $this->runScript('getPlotCor.py', [json_encode(['data'=>$tmpdata])]);
 		if($plotCor == ""){$plotCor = [];}
 		else{$plotCor = json_decode($plotCor);}
 
@@ -67,79 +66,26 @@ class MultiController extends Controller
 	}
 
 	public function getGC(Request $request){
-		$config = DB::connection()->getConfig();
-		$ids = $request->input('ids');
-		$script = base_path('scripts/getGCheat.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db   = $config['database'];
-		$gc = shell_exec("python3 $script $host $user $pass $db $ids");
-		return $gc;
+		$ids = $this->validIds($request->input('ids'));
+		return $this->runScript('getGCheat.py', [$ids]);
 	}
 
 	public function getGenes(Request $request){
-		$config = DB::connection()->getConfig();
-		$ids = $request->input('ids');
-		$script = base_path('scripts/getGeneheat.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db = $config['database'];
-		$magma = shell_exec("python3 $script $host $user $pass $db $ids 2.5e-6");
-		return $magma;
+		$ids = $this->validIds($request->input('ids'));
+		return $this->runScript('getGeneheat.py', [$ids, '2.5e-6']);
 	}
 
 	public function getLociOverlap(Request $request){
-		$config = DB::connection()->getConfig();
-		$ids = $request->input('ids');
-		$script = base_path('scripts/getLociOverlap.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db = $config['database'];
-		$command = "python3 $script $host $user $pass $db $ids 2>&1";
-		$lociOver = shell_exec($command);
-		return $lociOver;
+		$ids = $this->validIds($request->input('ids'));
+		return $this->runScript('getLociOverlap.py', [$ids]);
 	}
 
 	public function getGenesPleiotropy(Request $request){
-		$config = DB::connection()->getConfig();
-		$ids = $request->input('ids');
-		$script = base_path('scripts/getGenesPleiotropy.py');
-		$host = $config['host'];
-		$user = $config['username'];
-		$pass = $config['password'];
-		$db = $config['database'];
-		$command = "python3 $script $host $user $pass $db $ids";
-		$genes = shell_exec($command);
-		return $genes;
+		$ids = $this->validIds($request->input('ids'));
+		return $this->runScript('getGenesPleiotropy.py', [$ids]);
 	}
 
 	public function imgdown(Request $request){
-		$t = time();
-		$svg = $request->input('data');
-		$type = $request->input('type');
-		$fileName = $request->input('fileName');
-		$filedir = config('app.datadir').'/tmp_plot/'.$t.'/';
-		File::makeDirectory($filedir, $mode = 0755, $recursive = true);
-		$svgfile = $filedir.'temp.svg';
-		$outfile = $filedir.$fileName.'_'.date('Ymd_His', $t).'.'.$type;
-
-		$svg = preg_replace("/\),rotate/", ")rotate", $svg);
-		$svg = preg_replace("/,skewX\(.+?\)/", "", $svg);
-		$svg = preg_replace("/,scale\(.+?\)/", "", $svg);
-		if($type=="svg"){
-			file_put_contents($svgfile, $svg);
-			File::move($svgfile, $outfile);
-		}else{
-			$image = new \Imagick();
-			$image->setResolution(300,300);
-			$image->readImageBlob('<?xml version="1.0"?>'.$svg);
-			$image->setImageFormat($type);
-			$image->writeImage($outfile);
-			return response() -> download($outfile);
-		}
-		return response() -> download($outfile);
-    }
+		return $this->plotDownload($request, date('Ymd_His'));
+	}
 }

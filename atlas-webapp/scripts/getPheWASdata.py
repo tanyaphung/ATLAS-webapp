@@ -9,6 +9,7 @@ import sys
 import os
 import configparser
 import MySQLdb
+import atlas_db
 import numpy as np
 import pandas as pd
 import json
@@ -38,9 +39,9 @@ def CheckInputType(text):
         return "Gene"
 
 ##### get SNP data #####
-def getSNP(text, ids, host, user, passwd, db, datadir, maxP):
+def getSNP(text, ids, datadir, maxP):
     ## connect mysql
-    conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+    conn = atlas_db.connect()
     c = conn.cursor()
 
     chrom = 0;
@@ -48,7 +49,7 @@ def getSNP(text, ids, host, user, passwd, db, datadir, maxP):
     if re.match(r'^rs', text, re.IGNORECASE):
         ucsc = MySQLdb.connect(host="genome-mysql.soe.ucsc.edu", user="genome", db="hg19")
         dbSNP = ucsc.cursor()
-        dbSNP.execute('SELECT chrom, chromEnd FROM snp146 WHERE name='+'"'+text+'"')
+        dbSNP.execute('SELECT chrom, chromEnd FROM snp146 WHERE name=%s', (text,))
         rows = dbSNP.fetchall()
         chrom, pos = rows[0]
         chrom = int(chrom.replace('chr', ''))
@@ -82,7 +83,7 @@ def getSNP(text, ids, host, user, passwd, db, datadir, maxP):
     return out
 
 ##### get Gene data #####
-def getGene(text, ids, host, user, passwd, db, datadir, genesdir, maxP):
+def getGene(text, ids, datadir, genesdir, maxP):
     text = text.upper()
     if not re.match(r'^ENSG', text):
         stdo = subprocess.Popen("grep "+text+" "+genesdir, stdout=subprocess.PIPE, shell=True)
@@ -100,7 +101,7 @@ def getGene(text, ids, host, user, passwd, db, datadir, genesdir, maxP):
             return "Gene_id_not_match"
 
     ## connect mysql
-    conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+    conn = atlas_db.connect()
     c = conn.cursor()
 
     if len(ids)==0:
@@ -126,30 +127,26 @@ def getGene(text, ids, host, user, passwd, db, datadir, genesdir, maxP):
     for r in rows:
         if r[0] in p:
             g = [r[0], float(p[r[0]])]
-            c.execute("SELECT PMID,Year,Domain,Trait,N FROM gwasDB WHERE id="+str(r[0]))
+            c.execute("SELECT PMID,Year,Domain,Trait,N FROM gwasDB WHERE id=%s", (r[0],))
             rows = c.fetchall()
             out.append(g+list(r)[1:])
 
     return out
 
 def main():
-    if len(sys.argv)<8:
-        sys.exit("ERROR: Not enought argument.\nUSAGE: ./getPheWASdata.py <host> <user> <passwd> <database> <text> <ids> <maxP> <datadir>")
+    if len(sys.argv)<5:
+        sys.exit("ERROR: Not enought argument.\nUSAGE: ./getPheWASdata.py <text> <ids> <maxP> <datadir>")
 
     ## Get arguments
-    host = sys.argv[1]
-    user = sys.argv[2]
-    passwd = sys.argv[3]
-    db = sys.argv[4]
-    text = sys.argv[5]
-    ids = sys.argv[6]
+    text = sys.argv[1]
+    ids = sys.argv[2]
     if ids=="NA":
         ids = []
     else:
         ids = [int(s) for s in ids.split(":")]
         ids.sort()
-    maxP = float(sys.argv[7])
-    datadir = sys.argv[8]
+    maxP = float(sys.argv[3])
+    datadir = sys.argv[4]
 
     ## config
     cfg = configparser.ConfigParser()
@@ -166,11 +163,11 @@ def main():
     if input_type=="SNP_error":
         error = "SNP_input_error"
     elif input_type=="SNP":
-        out = getSNP(text, ids, host, user, passwd, db, datadir, maxP)
+        out = getSNP(text, ids, datadir, maxP)
         if len(out)==0:
             error = "SNP_not_found"
     else:
-        out = getGene(text, ids, host, user, passwd, db, datadir, genedir, maxP)
+        out = getGene(text, ids, datadir, genedir, maxP)
         if len(out)==0:
             error = "Gene_not_found"
         elif out=="Gene_id_not_match":

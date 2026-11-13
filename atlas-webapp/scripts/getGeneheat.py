@@ -9,6 +9,7 @@ import sys
 import os
 import configparser
 import MySQLdb
+import atlas_db
 import numpy as np
 import pandas as pd
 import json
@@ -16,8 +17,8 @@ import math
 from scipy.cluster.hierarchy import linkage, leaves_list
 import time
 
-if len(sys.argv)<6:
-    sys.exit("ERROR: Not enough argument.\nUSAGE: ./getGeneheat.py <host> <user> <passwd> <database> <ids> <p-value>")
+if len(sys.argv)<3:
+    sys.exit("ERROR: Not enough argument.\nUSAGE: ./getGeneheat.py <ids> <p-value>")
 
 ##### Return index of a1 which exists in a2 #####
 def ArrayIn(a1, a2):
@@ -26,15 +27,11 @@ def ArrayIn(a1, a2):
 	return results
 
 ## Get arguments
-host = sys.argv[1]
-user = sys.argv[2]
-passwd = sys.argv[3]
-db = sys.argv[4]
-ids = sys.argv[5]
+ids = sys.argv[1]
 ids = ids.split(":")
 ids = [int(s) for s in ids]
 ids.sort()
-p = float(sys.argv[6])
+p = float(sys.argv[2])
 
 ## config
 cfg = configparser.ConfigParser()
@@ -43,7 +40,7 @@ cfg.read(os.path.dirname(os.path.realpath(__file__))+'/app.config')
 datadir = cfg.get('path', 'data')
 
 ## connect mysql
-conn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+conn = atlas_db.connect()
 c = conn.cursor()
 
 ## get sig genes
